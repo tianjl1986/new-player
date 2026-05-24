@@ -25,16 +25,13 @@ jobs:
           set -e
           
           echo "🚀 Preparing project structure..."
-          # 获取原始文件夹名
-          ORIGINAL_FOLDER=$(basename $(pwd))
+          # 为 Xcode Playgrounds 规范创建一个专门的构建副本，而不是重命名当前目录
+          # 这样可以彻底避免 Actions 最后清理环境时报 No such file or directory 的错误
+          BUILD_DIR="${GITHUB_WORKSPACE}_build/NewPlayer.swiftpm"
+          mkdir -p "${GITHUB_WORKSPACE}_build"
+          cp -a "$GITHUB_WORKSPACE/." "$BUILD_DIR/"
           
-          # 使用 trap 确保无论脚本成功还是失败，都会还原目录名，防止 Actions 后续步骤找不到目录
-          trap 'cd "$GITHUB_WORKSPACE/.."; mv NewPlayer.swiftpm "$ORIGINAL_FOLDER" 2>/dev/null || true' EXIT
-          
-          # 重命名为 .swiftpm 以触发正确的构建逻辑
-          cd ..
-          mv "$ORIGINAL_FOLDER" NewPlayer.swiftpm
-          cd NewPlayer.swiftpm
+          cd "$BUILD_DIR"
           
           rm -rf Payload NewPlayer.ipa NewPlayer.xcarchive DerivedData
           
@@ -82,6 +79,9 @@ jobs:
           
           echo "📊 Final Payload size: $(du -sh Payload | cut -f1)"
           zip -q -r NewPlayer.ipa Payload
+          
+          # 将生成的 IPA 复制回原始工作区供后续步骤上传
+          cp NewPlayer.ipa "$GITHUB_WORKSPACE/"
           
           echo "✅ Done! IPA Created."
 
