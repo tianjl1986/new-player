@@ -25,8 +25,11 @@ jobs:
           set -e
           
           echo "🚀 Preparing project structure..."
-          # 获取原始文件夹名并清理残留文件
+          # 获取原始文件夹名
           ORIGINAL_FOLDER=$(basename $(pwd))
+          
+          # 使用 trap 确保无论脚本成功还是失败，都会还原目录名，防止 Actions 后续步骤找不到目录
+          trap 'cd "$GITHUB_WORKSPACE/.."; mv NewPlayer.swiftpm "$ORIGINAL_FOLDER" 2>/dev/null || true' EXIT
           
           # 重命名为 .swiftpm 以触发正确的构建逻辑
           cd ..
@@ -80,9 +83,6 @@ jobs:
           echo "📊 Final Payload size: $(du -sh Payload | cut -f1)"
           zip -q -r NewPlayer.ipa Payload
           
-          # 🔄 还原目录名以便 Actions 清理
-          cd ..
-          mv NewPlayer.swiftpm "$ORIGINAL_FOLDER"
           echo "✅ Done! IPA Created."
 
       - name: Upload IPA Artifact
