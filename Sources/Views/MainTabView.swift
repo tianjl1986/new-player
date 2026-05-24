@@ -63,14 +63,15 @@ struct TabBarButton: View {
             appState.selectedTab = tab
         }) {
             VStack(spacing: 4) {
-                // TODO: Replace with actual SVG Image from Assets
-                Image(systemName: "circle.fill") 
-                    .font(.system(size: 24))
-                    .foregroundColor(appState.selectedTab == tab ? .blue : .gray)
+                Image(iconName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 28, height: 28)
+                    .opacity(appState.selectedTab == tab ? 1.0 : 0.4)
                 
                 Text(title)
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(appState.selectedTab == tab ? .blue : .gray)
+                    .foregroundColor(Color.white.opacity(appState.selectedTab == tab ? 1.0 : 0.4))
             }
             .frame(maxWidth: .infinity)
         }
