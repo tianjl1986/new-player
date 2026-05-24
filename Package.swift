@@ -14,7 +14,7 @@ let package = Package(
             bundleIdentifier: "com.skeuo.newplayer",
             displayVersion: "1.0.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .notes),
+            appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
                 .phone
@@ -23,8 +23,7 @@ let package = Package(
                 .portrait
             ],
             capabilities: [
-                .mediaLibrary(purposeString: "需要访问您的本地音乐库以进行音频扫描和播放。"),
-                .backgroundMode(.audio)
+                .mediaLibrary(purposeString: "需要访问您的本地音乐库以进行音频扫描和播放。")
             ]
         )
     ],
