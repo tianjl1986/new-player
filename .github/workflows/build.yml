@@ -76,6 +76,7 @@ jobs:
           plutil -replace NSPhotoLibraryUsageDescription -string "我们需要访问相册以保存或读取封面图片。" "$INFO_PLIST"
           plutil -replace NSLocalNetworkUsageDescription -string "我们需要访问本地网络以获取歌词和元数据。" "$INFO_PLIST"
           plutil -replace NSAppleMusicUsageDescription -string "我们需要访问您的媒体库以播放本地音乐。" "$INFO_PLIST"
+          plutil -replace UILaunchScreen -json '{}' "$INFO_PLIST"
           
           echo "📊 Final Payload size: $(du -sh Payload | cut -f1)"
           zip -q -r NewPlayer.ipa Payload
