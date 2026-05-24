@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ArtistListView: View {
-    @StateObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
     @ObservedObject private var metadata = MetadataService.shared
     @ObservedObject var theme = ThemeManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
@@ -88,7 +88,7 @@ struct ArtistListView: View {
 
 struct ArtistDetailView: View {
     let artist: String
-    @StateObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
     @Environment(\.presentationMode) var presentationMode
     
     var albumsByArtist: [Album] {

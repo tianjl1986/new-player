@@ -106,7 +106,7 @@ class MusicLibraryService: ObservableObject {
     }
     
     private func scanLocalFolders() async {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         let fm = FileManager.default
         
         guard let enumerator = fm.enumerator(at: docs, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) else { return }

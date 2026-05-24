@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.presentationMode) var presentationMode
-    @StateObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var themeManager = ThemeManager.shared
     @State private var isAddingFolder = false

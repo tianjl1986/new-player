@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct SearchView: View {
-    @StateObject private var libraryService = MusicLibraryService.shared
-    @StateObject private var player = MusicPlayer.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var player = MusicPlayer.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var searchText = ""
     @State private var selectedFilter = 0

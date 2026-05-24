@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EqualizerView: View {
-    @StateObject private var eqService = AudioEQService.shared
+    @ObservedObject private var eqService = AudioEQService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @ObservedObject private var theme = ThemeManager.shared
     @Environment(\.presentationMode) var presentationMode

@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct LibraryGridView: View {
-    @StateObject private var libraryService = MusicLibraryService.shared
-    @StateObject private var player = MusicPlayer.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var player = MusicPlayer.shared
     @ObservedObject var theme = ThemeManager.shared
     @Environment(\.presentationMode) var presentationMode
     

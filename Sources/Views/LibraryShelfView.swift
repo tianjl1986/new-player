@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct LibraryShelfView: View {
-    @StateObject private var libraryService = MusicLibraryService.shared
-    @StateObject private var player = MusicPlayer.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var player = MusicPlayer.shared
     @ObservedObject var theme = ThemeManager.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var expandedAlbumID: String? = nil
@@ -50,7 +50,7 @@ struct LibraryShelfView: View {
 // MARK: - 布局组件化
 
 struct ShelfViewContent: View {
-    @StateObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
     @Binding var expandedAlbumID: String?
     
     var body: some View {
@@ -80,7 +80,7 @@ struct ShelfViewContent: View {
 }
 
 struct GridViewContent: View {
-    @StateObject private var libraryService = MusicLibraryService.shared
+    @ObservedObject private var libraryService = MusicLibraryService.shared
     @ObservedObject private var loc = LocalizationManager.shared
     
     private let columns = [
@@ -117,7 +117,7 @@ struct AlbumShelfPill: View {
     let album: Album
     let isExpanded: Bool
     let onToggle: () -> Void
-    @StateObject private var player = MusicPlayer.shared
+    @ObservedObject private var player = MusicPlayer.shared
     @ObservedObject private var loc = LocalizationManager.shared
     @State private var navigateToAlbum: Album? = nil
     
