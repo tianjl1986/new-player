@@ -14,7 +14,6 @@ let package = Package(
             bundleIdentifier: "com.skeuo.newplayer",
             displayVersion: "1.0.0",
             bundleVersion: "1",
-            appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
                 .phone
