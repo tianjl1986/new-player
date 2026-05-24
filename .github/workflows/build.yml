@@ -10,6 +10,8 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
@@ -25,20 +27,19 @@ jobs:
           echo "🚀 Preparing project structure..."
           # 获取原始文件夹名并清理残留文件
           ORIGINAL_FOLDER=$(basename $(pwd))
-          rm -f Sources/SkeuoPlayerApp.swift
           
           # 重命名为 .swiftpm 以触发正确的构建逻辑
           cd ..
-          mv "$ORIGINAL_FOLDER" TinPlayer.swiftpm
-          cd TinPlayer.swiftpm
+          mv "$ORIGINAL_FOLDER" NewPlayer.swiftpm
+          cd NewPlayer.swiftpm
           
-          rm -rf Payload TinPlayer.ipa TinPlayer.xcarchive DerivedData
+          rm -rf Payload NewPlayer.ipa NewPlayer.xcarchive DerivedData
           
-          echo "🚀 Building TinPlayer.swiftpm..."
+          echo "🚀 Building NewPlayer.swiftpm..."
           /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcodebuild archive \
-            -scheme "TinPlayer" \
+            -scheme "NewPlayer" \
             -destination "generic/platform=iOS" \
-            -archivePath ./TinPlayer.xcarchive \
+            -archivePath ./NewPlayer.xcarchive \
             -derivedDataPath ./DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             AD_HOC_CODE_SIGNING_ALLOWED=YES \
@@ -46,7 +47,7 @@ jobs:
           
           echo "📦 Assembling Bundle..."
           # 直接寻找并提取 Xcode 已经完整组装好的 .app 包
-          APP_BUNDLE=$(find ./DerivedData -name "TinPlayer.app" -type d | grep "InstallationBuildProductsLocation" | head -n 1)
+          APP_BUNDLE=$(find ./DerivedData -name "NewPlayer.app" -type d | grep "InstallationBuildProductsLocation" | head -n 1)
           
           if [ -n "$APP_BUNDLE" ]; then
             echo "✅ Found Compiled App Bundle: $APP_BUNDLE"
@@ -54,20 +55,20 @@ jobs:
             cp -R "$APP_BUNDLE" Payload/
           else
             echo "⚠️ Compiled bundle not found in DerivedData, checking xcarchive..."
-            APP_BUNDLE="./TinPlayer.xcarchive/Products/Applications/TinPlayer.app"
+            APP_BUNDLE="./NewPlayer.xcarchive/Products/Applications/NewPlayer.app"
             if [ -d "$APP_BUNDLE" ]; then
                 echo "✅ Found in xcarchive: $APP_BUNDLE"
                 mkdir -p Payload
                 cp -R "$APP_BUNDLE" Payload/
             else
-                echo "❌ ERROR: Cannot find TinPlayer.app anywhere!"
+                echo "❌ ERROR: Cannot find NewPlayer.app anywhere!"
                 find . -name "*.app" -type d
                 exit 1
             fi
           fi
           
           echo "📝 Modifying Info.plist..."
-          INFO_PLIST="Payload/TinPlayer.app/Info.plist"
+          INFO_PLIST="Payload/NewPlayer.app/Info.plist"
           plutil -replace CFBundleIdentifier -string "com.skeuo.newplayer" "$INFO_PLIST"
           plutil -replace CFBundleDisplayName -string "New Player" "$INFO_PLIST"
           plutil -replace CFBundleName -string "NewPlayer" "$INFO_PLIST"
@@ -81,7 +82,7 @@ jobs:
           
           # 🔄 还原目录名以便 Actions 清理
           cd ..
-          mv TinPlayer.swiftpm "$ORIGINAL_FOLDER"
+          mv NewPlayer.swiftpm "$ORIGINAL_FOLDER"
           echo "✅ Done! IPA Created."
 
       - name: Upload IPA Artifact
