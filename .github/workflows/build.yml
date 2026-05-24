@@ -1,4 +1,4 @@
-name: New Player Build
+name: TinPlayer Build
 
 on:
   push:
@@ -23,26 +23,26 @@ jobs:
           set -e
           
           echo "🚀 Preparing project structure..."
-          # 获取原始文件夹名
           ORIGINAL_FOLDER=$(basename $(pwd))
           
-          # 重命名为 .swiftpm 以触发正确的构建逻辑
+          # 重命名为 TinPlayer.swiftpm 以匹配您代码里的 Package name
           cd ..
-          mv "$ORIGINAL_FOLDER" NewPlayer.swiftpm
-          cd NewPlayer.swiftpm
+          mv "$ORIGINAL_FOLDER" TinPlayer.swiftpm
+          cd TinPlayer.swiftpm
           
-          echo "🚀 Building NewPlayer.swiftpm..."
+          echo "🚀 Building TinPlayer.swiftpm..."
+          # 这里必须用 TinPlayer 作为 scheme，因为您的代码叫这个名字
           /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcodebuild archive \
-            -scheme "NewPlayer" \
+            -scheme "TinPlayer" \
             -destination "generic/platform=iOS" \
-            -archivePath ./NewPlayer.xcarchive \
+            -archivePath ./TinPlayer.xcarchive \
             -derivedDataPath ./DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             AD_HOC_CODE_SIGNING_ALLOWED=YES \
             SKIP_INSTALL=NO
           
           echo "📦 Assembling Bundle..."
-          APP_BUNDLE=$(find ./DerivedData -name "*.app" -type d | grep "InstallationBuildProductsLocation" | head -n 1)
+          APP_BUNDLE=$(find ./DerivedData -name "TinPlayer.app" -type d | grep "InstallationBuildProductsLocation" | head -n 1)
           
           if [ -n "$APP_BUNDLE" ]; then
             echo "✅ Found Compiled App Bundle: $APP_BUNDLE"
@@ -50,29 +50,32 @@ jobs:
             cp -R "$APP_BUNDLE" Payload/
           else
             echo "⚠️ Compiled bundle not found in DerivedData, checking xcarchive..."
-            APP_BUNDLE=$(find ./NewPlayer.xcarchive/Products/Applications -name "*.app" -type d | head -n 1)
-            if [ -n "$APP_BUNDLE" ]; then
+            APP_BUNDLE="./TinPlayer.xcarchive/Products/Applications/TinPlayer.app"
+            if [ -d "$APP_BUNDLE" ]; then
                 echo "✅ Found in xcarchive: $APP_BUNDLE"
                 mkdir -p Payload
                 cp -R "$APP_BUNDLE" Payload/
             else
-                echo "❌ ERROR: Cannot find .app anywhere!"
+                echo "❌ ERROR: Cannot find TinPlayer.app anywhere!"
+                # 无论成功失败，保证把文件夹名字改回去，防止后续 Action 崩溃
+                cd ..
+                mv TinPlayer.swiftpm "$ORIGINAL_FOLDER"
                 exit 1
             fi
           fi
           
           # 📝 生成 Info.plist
-          cat << 'EOF' > Payload/*.app/Info.plist
+          cat << 'EOF' > Payload/TinPlayer.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
-              <key>CFBundleExecutable</key><string>NewPlayer</string>
-              <key>CFBundleIdentifier</key><string>com.skeuo.newplayer</string>
-              <key>CFBundleName</key><string>NewPlayer</string>
+              <key>CFBundleExecutable</key><string>TinPlayer</string>
+              <key>CFBundleIdentifier</key><string>com.skeuo.tinplayer</string>
+              <key>CFBundleName</key><string>TinPlayer</string>
               <key>CFBundlePackageType</key><string>APPL</string>
-              <key>CFBundleShortVersionString</key><string>1.0.0</string>
-              <key>CFBundleVersion</key><string>1</string>
+              <key>CFBundleShortVersionString</key><string>1.3.0</string>
+              <key>CFBundleVersion</key><string>28</string>
               <key>LSRequiresIPhoneOS</key><true/>
               <key>UILaunchScreen</key><dict/>
               <key>MinimumOSVersion</key><string>16.0</string>
@@ -90,23 +93,25 @@ jobs:
           EOF
           
           echo "📊 Final Payload size: $(du -sh Payload | cut -f1)"
-          zip -q -r NewPlayer.ipa Payload
+          # 输出的名字这里我帮您改为了 new-player.ipa
+          zip -q -r new-player.ipa Payload
           
+          # 🔄 还原目录名以便 Actions 继续运行
           cd ..
-          mv NewPlayer.swiftpm "$ORIGINAL_FOLDER"
+          mv TinPlayer.swiftpm "$ORIGINAL_FOLDER"
           echo "✅ Done! IPA Created."
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NewPlayer-IPA
-          path: NewPlayer.ipa
+          name: new-player-IPA
+          path: new-player.ipa
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v1.0.0-${{ github.run_number }}"
+          tag_name: "v1.3.0-${{ github.run_number }}"
           name: "New Player Release #${{ github.run_number }}"
-          files: NewPlayer.ipa
+          files: new-player.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
